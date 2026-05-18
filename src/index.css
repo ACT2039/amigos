@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-deep text-primary font-body antialiased overflow-x-hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+
+  /* Custom Scrollbar for Neon-Noir Theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface border border-glass rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-glass shadow-lg;
+  }
+  
+  .neon-input {
+    @apply w-full bg-deep/50 border-b-2 border-muted focus:border-neon-teal outline-none px-4 py-3 text-primary transition-colors duration-300;
+  }
+  
+  .neon-button {
+    @apply px-6 py-3 rounded-md font-display font-bold tracking-wide transition-all duration-300 active:scale-[0.97];
+  }
+  
+  .neon-button-primary {
+    @apply neon-button bg-neon-teal text-deep shadow-[0_0_15px_rgba(0,245,212,0.3)] hover:shadow-[0_0_25px_rgba(0,245,212,0.5)];
+  }
+  
+  .neon-button-danger {
+    @apply neon-button bg-transparent border border-neon-pink text-neon-pink shadow-[0_0_10px_rgba(255,77,141,0.2)] hover:bg-neon-pink/10 hover:shadow-[0_0_20px_rgba(255,77,141,0.4)];
+  }
+}
+
+/* Leaflet popup overrides for dark theme */
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+.leaflet-popup-tip {
+  background: #131929 !important;
+  border: 1px solid rgba(0,245,212,0.3) !important;
+  box-shadow: none !important;
+}
+.leaflet-popup-close-button {
+  display: none !important;
+}
+.leaflet-control-attribution {
+  background: rgba(11,15,26,0.7) !important;
+  color: #6B7A99 !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a {
+  color: #00F5D4 !important;
+}
