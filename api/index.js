@@ -111,5 +111,6 @@ process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
 });
 
-// Export for Vercel serverless
-export default app;
+// Export for Vercel serverless - use module.exports for CommonJS compatibility
+export { app as default };
+export const handler = app;
