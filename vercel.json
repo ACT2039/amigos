@@ -2,7 +2,6 @@
   "version": 2,
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
-  "nodeVersion": "18.x",
   "public": true,
   "rewrites": [
     {
