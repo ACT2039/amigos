@@ -6,6 +6,9 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import setupSockets from './sockets/index.js';
+import authRoutes from './routes/authRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // Load env vars
 dotenv.config();
@@ -43,7 +46,6 @@ const io = new Server(server, {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   },
-  // Socket.IO reconnection settings
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
@@ -61,7 +63,17 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));ot endpoint
+}));
+
+// Setup Socket.IO
+setupSockets(io);
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/users', userRoutes);
+
+// Root endpoint
 app.get('/', (req, res) => {
   res.status(200).json({ 
     message: 'Amigos Backend API',
@@ -78,12 +90,16 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development'
   });
 });
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'Amigos API is running',
     environment: process.env.NODE_ENV || 'development',
     uptime: process.uptime()
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
@@ -107,7 +123,6 @@ process.on('unhandledRejection', (reason, promise) => {
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
-  // Give server time to log and notify, then restart
   setTimeout(() => process.exit(1), 1000);
 });
 
@@ -128,31 +143,4 @@ server.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   console.log(`✅ Server is in ONLINE mode`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Database: ${dbConnected ? 'Connected' : 'Connecting...'}es
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  // Give server time to log and notify, then restart
-  setTimeout(() => process.exit(1), 1000);
-});
-
-// Graceful shutdown handler
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
-  });
-});
-
-server.on('error', (error) => {
-  console.error('Server error:', error);
-});
-
-server.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  console.log(`✅ Server is in ONLINE mode`);
-});
+  console.log(`Database: ${dbConnected ? 'Connected' : 'Connecting...'}`);});
