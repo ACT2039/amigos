@@ -53,7 +53,7 @@ app.use(cors({
 app.use(helmet());
 
 // Health check endpoints
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health', '/api'], (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'Amigos API is running',
@@ -75,9 +75,9 @@ import authRoutes from '../backend/routes/authRoutes.js';
 import userRoutes from '../backend/routes/userRoutes.js';
 import groupRoutes from '../backend/routes/groupRoutes.js';
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/groups', groupRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/users', '/users'], userRoutes);
+app.use(['/api/groups', '/groups'], groupRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
