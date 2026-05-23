@@ -5,13 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cd backend && npm install && cd .. && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "backend:dev": "cd backend && npm run dev",
     "backend:start": "cd backend && npm start",
-    "backend:install": "cd backend && npm install",
-    "setup": "npm install && cd backend && npm install && cd ..",
     "start:all": "concurrently \"npm run backend:start\" \"npm run preview\"",
     "dev:all": "concurrently \"npm run backend:dev\" \"npm run dev\""
   },
