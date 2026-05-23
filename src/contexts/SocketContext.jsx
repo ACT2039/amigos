@@ -18,9 +18,10 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user) return;
 
+    const isProduction = import.meta.env.PROD;
     const socketUrl = import.meta.env.VITE_API_URL 
       ? import.meta.env.VITE_API_URL.replace('/api', '') 
-      : 'http://localhost:5000';
+      : (isProduction ? window.location.origin : 'http://localhost:5000');
     
     const newSocket = io(socketUrl, { withCredentials: true });
     setSocket(newSocket);
