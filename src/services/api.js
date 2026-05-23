@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-const isProduction = import.meta.env.PROD;
-// Force relative URL in production for unified Vercel deployment, overriding any bad VITE_API_URL settings
-const API_URL = isProduction ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+// Prioritize VITE_API_URL if provided, otherwise fallback appropriately
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 const api = axios.create({
   baseURL: API_URL,

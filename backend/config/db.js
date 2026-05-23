@@ -21,7 +21,6 @@ const connectDB = async () => {
     const conn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 60000,
-      bufferCommands: false,
       connectTimeoutMS: 30000,
       retryWrites: true,
       retryReads: true,

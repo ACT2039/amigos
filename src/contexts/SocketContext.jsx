@@ -18,8 +18,8 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!user) return;
 
-    const isProduction = import.meta.env.PROD;
-    const socketUrl = isProduction ? window.location.origin : (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000');
+    // Prioritize VITE_API_URL (with /api stripped) if provided, otherwise fallback
+    const socketUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : (import.meta.env.PROD ? window.location.origin : 'http://localhost:5000');
     
     const newSocket = io(socketUrl, { withCredentials: true });
     setSocket(newSocket);

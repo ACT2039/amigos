@@ -30,8 +30,8 @@ const connectDBWithRetry = async () => {
   console.warn('⚠️ Could not connect to database initially, but server will continue running');
 };
 
-// Initialize database connection
-connectDBWithRetry().catch(err => {
+// Initialize database connection (await ensures it connects before taking requests on Vercel)
+await connectDBWithRetry().catch(err => {
   console.error('Final DB connection error:', err);
 });
 
