@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm ci",
+  "buildCommand": "npm ci --prefix backend && npm run build",
+  "installCommand": "npm ci && npm ci --prefix backend",
   "public": true,
   "rewrites": [
     {
