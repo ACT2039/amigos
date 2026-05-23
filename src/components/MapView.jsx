@@ -196,7 +196,7 @@ function InfoPopup({ data, onClose }) {
 
 // --- Main MapView ---
 export default function MapView({ friends }) {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyDhq-vVMfPkHbaiFLyhR029wjr0tHKj0ng';
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey || '',
