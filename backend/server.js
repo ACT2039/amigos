@@ -69,9 +69,9 @@ app.use(cors({
 setupSockets(io);
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/users', userRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/groups', '/groups'], groupRoutes);
+app.use(['/api/users', '/users'], userRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

@@ -81,7 +81,7 @@ export default function LandingPage() {
         
         setError('Account not found. Please sign up first to continue!');
       } else {
-        setError(err.response?.data?.message || 'Authentication failed');
+        setError(err.response?.data?.message || err.response?.data?.error || 'Authentication failed');
       }
     } finally {
       setIsLoading(false);
