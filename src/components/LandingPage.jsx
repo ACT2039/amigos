@@ -70,7 +70,19 @@ export default function LandingPage() {
         setUser(data);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed');
+      const errCode = err.response?.data?.code;
+      if (activeTab === 'signin' && errCode === 'USER_NOT_FOUND') {
+        setActiveTab('signup');
+        
+        // Auto-fill the identifier into the correct signup field
+        if (identifier.includes('@')) setEmail(identifier);
+        else if (identifier.match(/^[\d\s\+\-]+$/)) setPhoneNumber(identifier);
+        else setUsername(identifier);
+        
+        setError('Account not found. Please sign up first to continue!');
+      } else {
+        setError(err.response?.data?.message || 'Authentication failed');
+      }
     } finally {
       setIsLoading(false);
     }

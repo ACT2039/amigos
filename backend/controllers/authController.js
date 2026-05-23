@@ -66,7 +66,12 @@ export const loginUser = async (req, res) => {
       $or: [{ email: identifier }, { username: identifier }, { phoneNumber: identifier }]
     }).select('+passwordHash');
 
-    if (user && (await user.matchPassword(password))) {
+    if (!user) {
+      console.warn(`❌ Login failed: User not found for identifier: ${identifier}`);
+      return res.status(404).json({ message: 'User not found. Please sign up first.', code: 'USER_NOT_FOUND' });
+    }
+
+    if (await user.matchPassword(password)) {
       const token = generateToken(res, user._id);
       console.log(`✅ Login successful for user: ${user.username}`);
       res.json({
@@ -78,8 +83,8 @@ export const loginUser = async (req, res) => {
         token,
       });
     } else {
-      console.warn(`❌ Login failed for identifier: ${identifier}. User found: ${!!user}`);
-      res.status(401).json({ message: 'Invalid credentials' });
+      console.warn(`❌ Login failed: Invalid password for identifier: ${identifier}`);
+      res.status(401).json({ message: 'Invalid password' });
     }
   } catch (error) {
     console.error(`🔥 Login error: ${error.message}`);
