@@ -7,14 +7,8 @@ const sendSMS = async (to, message) => {
   const hasCreds = !!(accountSid && authToken && fromPhone);
 
   if (!hasCreds) {
-    // No Twilio credentials — return simulated flag so the controller
-    // can include the OTP directly in the API response.
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.warn('[NO TWILIO] SMS service not configured — returning code directly.');
-    console.warn(`  To:      ${to}`);
-    console.warn(`  Message: ${message}`);
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    return { simulated: true };
+    console.error('❌ SMS service not configured (Twilio credentials missing).');
+    throw new Error('SMS service is not currently configured.');
   }
 
   try {

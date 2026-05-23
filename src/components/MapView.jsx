@@ -445,7 +445,7 @@ export default function MapView({ friends }) {
       </AnimatePresence>
 
       {/* ── Top-Left Controls ────────────────────────────────────────── */}
-      <div className="absolute top-4 left-4 z-[1000] flex gap-2">
+      <div className="absolute top-16 md:top-4 left-4 z-[1000] flex gap-2">
         {/* Theme selector */}
         <div className="relative">
           <button

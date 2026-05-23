@@ -4,15 +4,8 @@ const sendEmail = async (options) => {
   const hasCreds = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
 
   if (!hasCreds) {
-    // No SMTP credentials — return the code/link in a special property
-    // so the controller can include it in the API response for the user.
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.warn('[NO SMTP] Email service not configured — returning code directly.');
-    console.warn(`  To:      ${options.email}`);
-    console.warn(`  Subject: ${options.subject}`);
-    console.warn(`  Body:\n${options.message}`);
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    return { simulated: true };
+    console.error('❌ Email service not configured (SMTP_USER and SMTP_PASS are missing).');
+    throw new Error('Email service is not currently configured.');
   }
 
   try {

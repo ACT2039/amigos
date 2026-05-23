@@ -62,9 +62,24 @@ export const loginUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({
-      $or: [{ email: identifier }, { username: identifier }, { phoneNumber: identifier }]
-    }).select('+passwordHash');
+    const cleanIdentifier = identifier.replace(/[\s\-]/g, '');
+    const isPhone = /^(\+?\d+)$/.test(cleanIdentifier);
+    
+    const searchConditions = [
+      { email: identifier },
+      { username: identifier }
+    ];
+
+    if (isPhone) {
+      searchConditions.push({ phoneNumber: cleanIdentifier });
+      if (!cleanIdentifier.startsWith('+91') && cleanIdentifier.length >= 10) {
+        searchConditions.push({ phoneNumber: '+91' + cleanIdentifier });
+      }
+    } else {
+      searchConditions.push({ phoneNumber: identifier });
+    }
+
+    const user = await User.findOne({ $or: searchConditions }).select('+passwordHash');
 
     if (!user) {
       console.warn(`❌ Login failed: User not found for identifier: ${identifier}`);
@@ -121,15 +136,6 @@ export const sendOtp = async (req, res) => {
 
     const message = `Your Amigos verification code is: ${otp}`;
     const result = await sendSMS(phoneNumber, message);
-
-    // If SMS was simulated (no Twilio), include the OTP in the response
-    if (result.simulated) {
-      return res.status(200).json({
-        message: 'OTP sent successfully',
-        _devCode: otp,
-        _devNotice: 'Twilio not configured — code returned directly.',
-      });
-    }
 
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
@@ -195,21 +201,12 @@ export const forgotPassword = async (req, res) => {
       await user.save({ validateBeforeSave: false });
 
       // The frontend handles the reset at /#/reset-password/:token (hash routing)
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const resetUrl = `${frontendUrl}?resetToken=${resetToken}`;
+      const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+      const resetUrl = `${frontendUrl}/?resetToken=${resetToken}`;
       const message = `Hello ${user.username},\n\nYou requested a password reset for your Amigos account.\n\nClick the link below to set a new password (valid for 15 minutes):\n${resetUrl}\n\nIf you did not request this, you can safely ignore this email.`;
 
       try {
         const result = await sendEmail({ email: user.email, subject: 'Amigos — Password Reset Request', message });
-
-        if (result.simulated) {
-          // SMTP not configured — give the user the reset token directly
-          return res.status(200).json({
-            message: 'SMTP not configured — use the token below to reset your password.',
-            _devToken: resetToken,
-            _devNotice: 'No email service configured. Enter this token manually or use SMS method.',
-          });
-        }
 
         res.status(200).json({ message: 'Password reset email sent successfully.' });
       } catch (emailErr) {
@@ -235,15 +232,6 @@ export const forgotPassword = async (req, res) => {
 
       try {
         const result = await sendSMS(user.phoneNumber, smsMessage);
-
-        if (result.simulated) {
-          // Twilio not configured — return OTP directly so user can still reset
-          return res.status(200).json({
-            message: 'Twilio not configured — use the code below to reset your password.',
-            _devCode: otp,
-            _devNotice: 'No SMS service configured. The reset code is returned directly.',
-          });
-        }
 
         res.status(200).json({ message: 'OTP sent to your registered phone number.' });
       } catch (smsErr) {

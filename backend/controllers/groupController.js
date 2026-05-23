@@ -190,7 +190,8 @@ export const generateInviteToken = async (req, res) => {
     group.inviteTokens.push(invitation._id);
     await group.save();
 
-    const inviteLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/invite/${token}`;
+    const baseUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+    const inviteLink = `${baseUrl}/invite/${token}`;
 
     res.json({ inviteLink, token, uniqueCode: group.uniqueCode });
   } catch (error) {
