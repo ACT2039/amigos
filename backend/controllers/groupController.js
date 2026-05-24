@@ -190,7 +190,7 @@ export const generateInviteToken = async (req, res) => {
     group.inviteTokens.push(invitation._id);
     await group.save();
 
-    const baseUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+    const baseUrl = (process.env.FRONTEND_URL || 'https://amigos-phi-sooty.vercel.app').replace(/\/+$/, '');
     const inviteLink = `${baseUrl}/invite/${token}`;
 
     res.json({ inviteLink, token, uniqueCode: group.uniqueCode });

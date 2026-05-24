@@ -337,8 +337,8 @@ export default function Dashboard() {
       <AnimatePresence>
         {showMobileSidebar && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="md:hidden fixed inset-0 bg-deep/60 backdrop-blur-sm z-40" onClick={() => setShowMobileSidebar(false)} />
-            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="md:hidden fixed left-0 top-0 bottom-0 w-[280px] bg-surface/95 backdrop-blur-xl border-r border-glass z-50 shadow-2xl">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="md:hidden fixed inset-0 bg-deep/60 backdrop-blur-sm z-[1040]" onClick={() => setShowMobileSidebar(false)} />
+            <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="md:hidden fixed left-0 top-0 bottom-0 w-[280px] bg-surface/95 backdrop-blur-xl border-r border-glass z-[1050] shadow-2xl">
               <div className="flex items-center justify-between p-4 border-b border-glass">
                 <h2 className="font-display font-bold text-primary text-sm">Amigos</h2>
                 <button onClick={() => setShowMobileSidebar(false)} className="w-8 h-8 rounded-lg bg-deep/50 flex items-center justify-center text-muted hover:text-primary">

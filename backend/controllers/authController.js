@@ -201,7 +201,7 @@ export const forgotPassword = async (req, res) => {
       await user.save({ validateBeforeSave: false });
 
       // The frontend handles the reset at /#/reset-password/:token (hash routing)
-      const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+      const frontendUrl = (process.env.FRONTEND_URL || 'https://amigos-phi-sooty.vercel.app').replace(/\/+$/, '');
       const resetUrl = `${frontendUrl}/?resetToken=${resetToken}`;
       const message = `Hello ${user.username},\n\nYou requested a password reset for your Amigos account.\n\nClick the link below to set a new password (valid for 15 minutes):\n${resetUrl}\n\nIf you did not request this, you can safely ignore this email.`;
 
