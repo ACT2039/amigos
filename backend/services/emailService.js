@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
   const brevoApiKey = process.env.BREVO_API_KEY;
