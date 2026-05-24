@@ -33,7 +33,7 @@ const sendEmail = async (options) => {
     return { simulated: false };
   } catch (error) {
     console.error('❌ Error sending email:', error.message);
-    throw new Error('Failed to send email. Please try again later.');
+    throw new Error(`Email Error: ${error.message}`);
   }
 };
 
