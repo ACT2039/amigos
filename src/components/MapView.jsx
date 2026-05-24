@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OVERLAY_MOUSE_TARGET, PolylineF } from '@react-google-maps/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crosshair, Layers, Locate, MapPin, Navigation, X } from 'lucide-react';
@@ -390,30 +390,48 @@ export default function MapView({ friends }) {
           />
         )}
 
-        {/* Distance Lines */}
+        {/* Distance Lines and Labels */}
         {location.loaded && location.coordinates.lat !== 0 && friends.map((friend) => {
           if (!friend.currentLocation || !friend.currentLocation.lat) return null;
+          
+          const dist = distances[friend._id];
+          const distLabel = formatDist(dist);
+          const midLat = (location.coordinates.lat + friend.currentLocation.lat) / 2;
+          const midLng = (location.coordinates.lng + friend.currentLocation.lng) / 2;
+
           return (
-            <PolylineF
-              key={`line-${friend._id}`}
-              path={[
-                { lat: location.coordinates.lat, lng: location.coordinates.lng },
-                { lat: friend.currentLocation.lat, lng: friend.currentLocation.lng }
-              ]}
-              options={{
-                strokeOpacity: 0,
-                icons: [{
-                  icon: {
-                    path: 'M 0,-1 0,1',
-                    strokeOpacity: 0.6,
-                    scale: 2.5,
-                    strokeColor: '#00F5D4'
-                  },
-                  offset: '0',
-                  repeat: '15px'
-                }],
-              }}
-            />
+            <React.Fragment key={`dist-wrapper-${friend._id}`}>
+              <PolylineF
+                path={[
+                  { lat: location.coordinates.lat, lng: location.coordinates.lng },
+                  { lat: friend.currentLocation.lat, lng: friend.currentLocation.lng }
+                ]}
+                options={{
+                  strokeOpacity: 0,
+                  icons: [{
+                    icon: {
+                      path: 'M 0,-1 0,1',
+                      strokeOpacity: 0.6,
+                      scale: 2.5,
+                      strokeColor: '#00F5D4'
+                    },
+                    offset: '0',
+                    repeat: '15px'
+                  }],
+                }}
+              />
+              {distLabel && (
+                <OverlayViewF
+                  position={{ lat: midLat, lng: midLng }}
+                  mapPaneName={OVERLAY_MOUSE_TARGET}
+                  getPixelPositionOffset={(w, h) => ({ x: -(w / 2), y: -(h / 2) })}
+                >
+                  <div className="bg-[#0B0F1A]/90 backdrop-blur border border-neon-teal text-neon-teal font-mono text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(0,245,212,0.5)] whitespace-nowrap pointer-events-none">
+                    {distLabel}
+                  </div>
+                </OverlayViewF>
+              )}
+            </React.Fragment>
           );
         })}
 

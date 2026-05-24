@@ -70,6 +70,14 @@ export default function useGeolocation() {
       // Don't override if user has manually set their location
       if (isManualRef.current) return;
 
+      // Filter out extremely low-accuracy signals (e.g. > 1500m radius)
+      // This prevents the avatar from wildly jumping around if the phone
+      // temporarily loses GPS satellite lock and falls back to cell-tower triangulation.
+      if (position.coords.accuracy > 1500) {
+        console.warn('Ignored low-accuracy GPS signal:', position.coords.accuracy, 'meters');
+        return;
+      }
+
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
