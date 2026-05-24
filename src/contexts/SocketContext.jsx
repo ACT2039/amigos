@@ -39,6 +39,16 @@ export const SocketProvider = ({ children }) => {
       updateFriendLocation(data.userId, { isOnline: true });
     });
 
+    // Listen for group deletion
+    newSocket.on('group-deleted', (data) => {
+      const state = useStore.getState();
+      if (state.activeGroupId === data.groupId) {
+        state.setActiveGroup(null);
+        alert('This group was permanently deleted by the admin.');
+        window.location.reload(); // Refresh to clean up state and refetch groups
+      }
+    });
+
     return () => {
       newSocket.disconnect();
     };

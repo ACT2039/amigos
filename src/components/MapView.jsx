@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { GoogleMap, useJsApiLoader, OverlayViewF, OVERLAY_MOUSE_TARGET } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, OverlayViewF, OVERLAY_MOUSE_TARGET, PolylineF } from '@react-google-maps/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crosshair, Layers, Locate, MapPin, Navigation, X } from 'lucide-react';
 import useGeolocation from '../hooks/useGeolocation';
@@ -389,6 +389,33 @@ export default function MapView({ friends }) {
             }}
           />
         )}
+
+        {/* Distance Lines */}
+        {location.loaded && location.coordinates.lat !== 0 && friends.map((friend) => {
+          if (!friend.currentLocation || !friend.currentLocation.lat) return null;
+          return (
+            <PolylineF
+              key={`line-${friend._id}`}
+              path={[
+                { lat: location.coordinates.lat, lng: location.coordinates.lng },
+                { lat: friend.currentLocation.lat, lng: friend.currentLocation.lng }
+              ]}
+              options={{
+                strokeOpacity: 0,
+                icons: [{
+                  icon: {
+                    path: 'M 0,-1 0,1',
+                    strokeOpacity: 0.6,
+                    scale: 2.5,
+                    strokeColor: '#00F5D4'
+                  },
+                  offset: '0',
+                  repeat: '15px'
+                }],
+              }}
+            />
+          );
+        })}
 
         {/* Friend Markers */}
         {friends.map((friend) => {

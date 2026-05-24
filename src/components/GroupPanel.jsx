@@ -95,6 +95,17 @@ export default function GroupPanel({ friends, activeGroup, onRefreshGroups, onLe
     );
   }
 
+  const handleDeleteGroup = async () => {
+    if (!window.confirm('Are you sure you want to permanently delete this group? This action cannot be undone and will kick all members.')) return;
+    try {
+      await api.delete(`/groups/${activeGroupId}`);
+      onRefreshGroups?.();
+      useStore.setState({ activeGroupId: null });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete group');
+    }
+  };
+
   return (
     <div className="flex flex-col h-full w-full">
       {/* Group Header */}
@@ -250,9 +261,17 @@ export default function GroupPanel({ friends, activeGroup, onRefreshGroups, onLe
           </button>
         )}
 
-        <button onClick={onLeaveGroup} className="w-full py-2 mt-1 text-xs text-muted hover:text-neon-pink transition-colors flex items-center justify-center gap-2">
-          <LogOut className="w-3.5 h-3.5" /> Leave Group
-        </button>
+        <div className="flex gap-2 w-full mt-1">
+          <button onClick={onLeaveGroup} className="flex-1 py-2 text-xs text-muted hover:text-neon-pink transition-colors flex items-center justify-center gap-2">
+            <LogOut className="w-3.5 h-3.5" /> Leave Group
+          </button>
+          
+          {isAdmin && (
+            <button onClick={handleDeleteGroup} className="flex-1 py-2 text-xs text-neon-pink hover:bg-neon-pink/10 transition-colors flex items-center justify-center gap-2 border-l border-glass">
+              <LogOut className="w-3.5 h-3.5" /> Delete Group
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

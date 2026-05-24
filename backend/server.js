@@ -67,6 +67,7 @@ app.use(cors({
 
 // Setup Socket.IO
 setupSockets(io);
+app.set('io', io);
 
 // Routes
 app.use(['/api/auth', '/auth'], authRoutes);
