@@ -324,12 +324,8 @@ export default function LandingPage() {
 
                   <div className="flex flex-col gap-3">
                     <button onClick={() => handleResetRequest('email')} disabled={isLoading} className="w-full text-left px-4 py-3 bg-surface hover:bg-surface/80 border border-glass rounded-md transition-colors flex items-center justify-between group disabled:opacity-50">
-                      <span className="font-medium text-sm flex items-center gap-2"><Mail className="w-4 h-4 text-neon-teal" /> Send reset link via Email</span>
+                      <span className="font-medium text-sm flex items-center gap-2"><Mail className="w-4 h-4 text-neon-teal" /> Send Reset Link</span>
                       {isLoading && resetMethod === 'email' ? <div className="w-4 h-4 border-2 border-neon-teal/30 border-t-neon-teal rounded-full animate-spin" /> : <ArrowRight className="w-4 h-4 text-muted group-hover:text-neon-teal" />}
-                    </button>
-                    <button onClick={() => handleResetRequest('sms')} disabled={isLoading} className="w-full text-left px-4 py-3 bg-surface hover:bg-surface/80 border border-glass rounded-md transition-colors flex items-center justify-between group disabled:opacity-50">
-                      <span className="font-medium text-sm flex items-center gap-2"><Phone className="w-4 h-4 text-neon-teal" /> Send OTP via SMS</span>
-                      {isLoading && resetMethod === 'sms' ? <div className="w-4 h-4 border-2 border-neon-teal/30 border-t-neon-teal rounded-full animate-spin" /> : <ArrowRight className="w-4 h-4 text-muted group-hover:text-neon-teal" />}
                     </button>
                   </div>
                   <p className="mt-4 text-[10px] text-muted font-mono text-center">
@@ -346,7 +342,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-lg font-display font-bold text-primary mb-2">Check Your Email 📧</h3>
                   <p className="text-sm text-muted mb-2">
-                    A password reset link has been sent to <span className="text-primary font-medium">{resetIdentifier}</span>. Click the link in the email to set a new password.
+                    A password reset link has been sent to your registered email. Click the link in the email to set a new password.
                   </p>
                   <p className="text-xs text-muted mb-1">Didn't get it? Check your spam folder.</p>
                   <p className="text-[10px] text-amber-400/80 font-mono mt-1 mb-5">
@@ -358,44 +354,6 @@ export default function LandingPage() {
                 </div>
               )}
 
-              {/* ── STEP: otp (SMS) ────────────────────────────────────────── */}
-              {resetStep === 'otp' && (
-                <>
-                  <h3 className="text-xl font-display font-bold text-primary mb-2">Enter OTP</h3>
-                  <p className="text-sm text-muted mb-1">
-                    A 6-digit code was sent to <span className="text-primary font-medium">{resetIdentifier}</span>.
-                  </p>
-                  <p className="text-[10px] text-amber-400/80 font-mono mb-5">
-                    💡 Dev mode? The OTP is printed in your backend terminal.
-                  </p>
-
-                  <div className="relative mb-2">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neon-teal w-5 h-5" />
-                    <input
-                      type="text"
-                      value={otpInput}
-                      onChange={e => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      placeholder="000000"
-                      className="neon-input pl-10 text-center tracking-[0.5em] font-mono text-xl"
-                      maxLength={6}
-                      onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted font-mono mb-5">Code expires in 10 minutes.</p>
-
-                  <button
-                    onClick={handleVerifyOtp}
-                    disabled={isLoading || otpInput.length < 6}
-                    className="neon-button-primary w-full flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    {isLoading ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Verifying...</> : 'Verify Code'}
-                  </button>
-
-                  <button onClick={() => { setResetStep('method'); setError(''); setOtpInput(''); }} className="mt-3 w-full text-xs text-muted hover:text-primary transition-colors">
-                    ← Resend code
-                  </button>
-                </>
-              )}
 
               {/* ── STEP: new_password ─────────────────────────────────────── */}
               {resetStep === 'new_password' && (

@@ -232,12 +232,9 @@ export default function MapView({ friends }) {
     }
   }, [socket, location.coordinates.lat, location.coordinates.lng, location.address, user, activeGroupId]);
 
-  const center = useMemo(() => {
-    if (location.loaded && location.coordinates.lat !== 0) {
-      return { lat: location.coordinates.lat, lng: location.coordinates.lng };
-    }
+  const initialCenter = useMemo(() => {
     return { lat: 18.2949, lng: 83.8938 }; // Default: Srikakulam district, AP
-  }, [location.loaded, location.coordinates.lat, location.coordinates.lng]);
+  }, []);
 
   // Auto-center once on first valid location
   useEffect(() => {
@@ -362,7 +359,7 @@ export default function MapView({ friends }) {
 
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={center}
+        center={initialCenter}
         zoom={14}
         onLoad={onLoad}
         onUnmount={onUnmount}
@@ -426,7 +423,7 @@ export default function MapView({ friends }) {
                   mapPaneName={OVERLAY_MOUSE_TARGET}
                   getPixelPositionOffset={(w, h) => ({ x: -(w / 2), y: -(h / 2) })}
                 >
-                  <div className="bg-[#0B0F1A]/90 backdrop-blur border border-neon-teal text-neon-teal font-mono text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_10px_rgba(0,245,212,0.5)] whitespace-nowrap pointer-events-none">
+                  <div className="bg-[#0B0F1A]/90 backdrop-blur border-2 border-neon-teal text-neon-teal font-mono text-xs font-bold px-3 py-1 rounded-full shadow-[0_0_15px_rgba(0,245,212,0.8)] whitespace-nowrap pointer-events-none">
                     {distLabel}
                   </div>
                 </OverlayViewF>

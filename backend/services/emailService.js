@@ -10,13 +10,14 @@ const sendEmail = async (options) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: process.env.SMTP_PORT === '465', // true for SSL
+      service: 'gmail',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      connectionTimeout: 10000, // 10 seconds to prevent infinite loading
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
 
     const message = {

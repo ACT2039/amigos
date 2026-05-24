@@ -1,7 +1,6 @@
 import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 import sendEmail from '../services/emailService.js';
-import sendSMS from '../services/smsService.js';
 import crypto from 'crypto';
 
 // @desc    Register a new user
@@ -107,73 +106,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Send OTP for phone login
-// @route   POST /api/auth/send-otp
-// @access  Public
-export const sendOtp = async (req, res) => {
-  const { phoneNumber } = req.body;
-  try {
-    if (!phoneNumber) return res.status(400).json({ message: 'Phone number is required' });
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-
-    let user = await User.findOne({ phoneNumber });
-    if (!user) {
-      user = await User.create({
-        username: `user_${Math.floor(Math.random() * 100000)}`,
-        email: `temp_${Math.floor(Math.random() * 100000)}@amigo.app`,
-        phoneNumber,
-        passwordHash: otp,
-        otp,
-        otpExpires,
-      });
-    } else {
-      user.otp = otp;
-      user.otpExpires = otpExpires;
-      await user.save({ validateBeforeSave: false });
-    }
-
-    const message = `Your Amigos verification code is: ${otp}`;
-    const result = await sendSMS(phoneNumber, message);
-
-    res.status(200).json({ message: 'OTP sent successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @desc    Verify OTP & login/signup
-// @route   POST /api/auth/verify-otp
-// @access  Public
-export const verifyOtp = async (req, res) => {
-  const { phoneNumber, otp } = req.body;
-  try {
-    const user = await User.findOne({ phoneNumber });
-
-    if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
-    }
-
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    const token = generateToken(res, user._id);
-    res.status(200).json({
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      profilePhoto: user.profilePhoto,
-      token,
-      isNewUser: user.email.startsWith('temp_'),
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @desc    Forgot Password — send OTP (SMS) or reset link (email)
+// @desc    Forgot Password — send reset link (email)
 // @route   POST /api/auth/forgot-password
 // @access  Public
 export const forgotPassword = async (req, res) => {
@@ -217,32 +150,8 @@ export const forgotPassword = async (req, res) => {
         return res.status(500).json({ message: emailErr.message });
       }
 
-    } else if (method === 'sms') {
-      if (!user.phoneNumber) {
-        return res.status(400).json({ message: 'No phone number linked to this account.' });
-      }
-
-      // 6-digit numeric OTP stored as hash
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      user.resetPasswordToken = crypto.createHash('sha256').update(otp).digest('hex');
-      user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
-      await user.save({ validateBeforeSave: false });
-
-      const smsMessage = `Your Amigos password reset code is: ${otp}. Valid for 10 minutes. Do not share it.`;
-
-      try {
-        const result = await sendSMS(user.phoneNumber, smsMessage);
-
-        res.status(200).json({ message: 'OTP sent to your registered phone number.' });
-      } catch (smsErr) {
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
-        await user.save({ validateBeforeSave: false });
-        return res.status(500).json({ message: smsErr.message });
-      }
-
     } else {
-      return res.status(400).json({ message: 'Invalid method. Use "email" or "sms".' });
+      return res.status(400).json({ message: 'Invalid method. Use "email".' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

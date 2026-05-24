@@ -3,8 +3,6 @@ import {
   registerUser,
   loginUser,
   getUserProfile,
-  sendOtp,
-  verifyOtp,
   forgotPassword,
   verifyResetToken,
   resetPassword,
@@ -15,8 +13,6 @@ const router = express.Router();
 
 router.post('/signup', registerUser);
 router.post('/login', loginUser);
-router.post('/send-otp', sendOtp);
-router.post('/verify-otp', verifyOtp);
 router.post('/forgot-password', forgotPassword);
 router.post('/verify-reset-token', verifyResetToken);
 router.put('/reset-password/:token', resetPassword);
