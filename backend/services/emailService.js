@@ -1,6 +1,6 @@
 
 const sendEmail = async (options) => {
-  const brevoApiKey = process.env.BREVO_API_KEY;
+  const brevoApiKey = process.env.BREVO_API_KEY?.trim();
   const fromEmail = process.env.FROM_EMAIL || 'charantejarangi122333@gmail.com'; // Defaulting to the verified email
 
   if (!brevoApiKey) {
