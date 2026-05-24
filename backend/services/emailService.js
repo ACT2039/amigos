@@ -1,40 +1,37 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
-  const hasCreds = !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  const fromEmail = process.env.FROM_EMAIL || 'charantejarangi122333@gmail.com'; // Defaulting to the verified email
 
-  if (!hasCreds) {
-    console.error('❌ Email service not configured (SMTP_USER and SMTP_PASS are missing).');
+  if (!brevoApiKey) {
+    console.error('❌ Email service not configured (BREVO_API_KEY missing).');
     throw new Error('Email service is not currently configured.');
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': brevoApiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      tls: {
-        rejectUnauthorized: false // Bypasses strict TLS which can hang behind some local firewalls/ISPs
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
+      body: JSON.stringify({
+        sender: { name: 'Amigos App', email: fromEmail },
+        to: [{ email: options.email }],
+        subject: options.subject,
+        htmlContent: options.html || `<p style="font-family:sans-serif;white-space:pre-wrap">${options.message}</p>`
+      })
     });
 
-    const message = {
-      from: `${process.env.FROM_NAME || 'Amigos'} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
-      to: options.email,
-      subject: options.subject,
-      text: options.message,
-      html: options.html || `<p style="font-family:sans-serif;white-space:pre-wrap">${options.message}</p>`,
-    };
+    const data = await response.json();
 
-    const info = await transporter.sendMail(message);
-    console.log(`✅ Email sent to ${options.email}. ID: ${info.messageId}`);
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to send via Brevo API');
+    }
+
+    console.log(`✅ Email sent via Brevo API to ${options.email}. MessageId: ${data.messageId}`);
     return { simulated: false };
   } catch (error) {
     console.error('❌ Error sending email:', error.message);
