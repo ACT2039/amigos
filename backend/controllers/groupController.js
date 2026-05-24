@@ -321,3 +321,45 @@ export const getMyGroups = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Delete a group (Admin only)
+// @route   DELETE /api/groups/:id
+// @access  Private
+export const deleteGroup = async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.id);
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    // Only admin can delete the group
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized, admin only' });
+    }
+
+    const groupId = group._id;
+
+    // 1. Remove group from all members' groups array
+    await User.updateMany(
+      { groups: groupId },
+      { $pull: { groups: groupId } }
+    );
+
+    // 2. Delete all invitations related to this group
+    await Invitation.deleteMany({ group: groupId });
+
+    // 3. Delete the group itself
+    await Group.findByIdAndDelete(groupId);
+
+    // 4. Emit a socket event to kick all users out of the room
+    const io = req.app.get('io');
+    if (io) {
+      io.to(groupId.toString()).emit('group-deleted', { groupId: groupId.toString() });
+    }
+
+    res.json({ message: 'Group deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
